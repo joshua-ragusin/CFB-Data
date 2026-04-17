@@ -20,7 +20,6 @@ final class NetworkClient: InjectionKey {
         
         if let headers = request.endpoint.headers {
             urlRequest.allHTTPHeaderFields = headers
-            print(headers)
         }
         
         let (data, response): (Data, URLResponse)

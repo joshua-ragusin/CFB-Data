@@ -10,10 +10,6 @@ enum RecordEndpoint {
 }
 
 extension RecordEndpoint: Endpoint {
-    var scheme: String { "https" }
-    
-    var host: String { "api.collegefootballdata.com" }
-    
     var path: String {
         switch self {
         case .records(_):
@@ -21,21 +17,10 @@ extension RecordEndpoint: Endpoint {
         }
     }
     
-    var method: HTTPMethod { . get }
-    
     var parameters: [String : String]? {
         switch self {
         case .records(let team):
             ["team": team]
         }
     }
-    
-    var headers: [String : String]? {
-        [
-            "Content-type" : "application/json",
-            "Authorization" : "Bearer \(APIConfig.shared.cfbDataToken ?? "")"
-        ]
-    }
-    
-    
 }

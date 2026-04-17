@@ -22,7 +22,6 @@ struct CFB_DataApp: App {
     }
     
     func boostrapAPIKey() {
-        print(Bundle.main.infoDictionary ?? [:])
         guard KeychainHelper.load() == nil else { return }
         if let key = Bundle.main.infoDictionary?["CFBDApiKey"] as? String {
             KeychainHelper.save(key)

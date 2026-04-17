@@ -10,23 +10,11 @@ enum GameEndpoint {
 }
 
 extension GameEndpoint: Endpoint {
-    var scheme: String {
-        "https"
-    }
-    
-    var host: String {
-        "api.collegefootballdata.com"
-    }
-    
     var path: String {
         switch self {
         case .games(_, _):
             "/games"
         }
-    }
-    
-    var method: HTTPMethod {
-        .get
     }
     
     var parameters: [String : String]? {
@@ -38,13 +26,4 @@ extension GameEndpoint: Endpoint {
             ]
         }
     }
-    
-    var headers: [String : String]? {
-        [
-            "Content-type" : "application/json",
-            "Authorization" : "Bearer \(APIConfig.shared.cfbDataToken ?? "")"
-        ]
-    }
-    
-    
 }

@@ -12,34 +12,14 @@ enum TeamEndpoint {
 }
 
 extension TeamEndpoint: Endpoint {
-    var scheme: String {
-        "https"
-    }
-    
-    var host: String {
-        "api.collegefootballdata.com"
-    }
-    
     var path: String {
         switch self {
         case .teamsFBS:
-            return "/teams/fbs"
+            "/teams/fbs"
         }
-    }
-    
-    var method: HTTPMethod {
-        .get
     }
     
     var parameters: [String : String]? {
         nil
     }
-    
-    var headers: [String : String]? {
-        [
-            "Content-type" : "application/json",
-            "Authorization" : "Bearer \(APIConfig.shared.cfbDataToken ?? "")"
-        ]
-    }
-    
 }

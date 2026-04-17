@@ -13,3 +13,16 @@ protocol Endpoint {
     var parameters: [String: String]? { get }
     var headers: [String: String]? { get }
 }
+
+extension Endpoint {
+    var scheme: String { "https" }
+    var host: String { "api.collegefootballdata.com" }
+    var method: HTTPMethod { .get }
+    
+    var headers: [String: String]? {
+        [
+            "Content-type": "application/json",
+            "Authorization": "Bearer \(APIConfig.shared.cfbDataToken ?? "")"
+        ]
+    }
+}
