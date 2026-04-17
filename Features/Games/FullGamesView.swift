@@ -11,9 +11,16 @@ struct FullGamesView: View {
     
     let games: [Game]
     
+    @Injected(\.networkClient) private var networkClient
+    
     var body: some View {
         List(games) { game in
             gameView(for: game)
+        }
+        .task {
+            if let game = games.last {
+                await fetchWPMetrics(for: game)
+            }
         }
     }
     
@@ -33,4 +40,13 @@ struct FullGamesView: View {
                 Text(game.awayTeam)
             }
         }
-    }}
+    }
+    
+    private func fetchWPMetrics(for game: Game) async {
+        do {
+            try await networkClient.send(MetricsRequest.winProbabilityPlays(gameID: game.id))
+        } catch {
+            print(error)
+        }
+    }
+}
