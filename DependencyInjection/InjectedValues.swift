@@ -46,4 +46,9 @@ extension InjectedValues {
         get { Self[RecordStore.self] }
         set { Self[RecordStore.self] = newValue }
     }
+    
+    var metricsStore: MetricsStore {
+        get { Self[MetricsStore.self] }
+        set { Self[MetricsStore.self] = newValue }
+    }
 }

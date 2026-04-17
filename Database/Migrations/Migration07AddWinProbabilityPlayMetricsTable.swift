@@ -12,7 +12,7 @@ struct Migration07AddWinProbabilityPlayMetricsTable: Migration {
     
     func migrate(_ db: GRDB.Database) throws {
         try db.create(table: "WinProbabilityPlay") { table in
-            table.autoIncrementedPrimaryKey("id")
+            table.column("id", .text).primaryKey()
             table.column("gameID", .integer).notNull().references("Game")
             table.column("home", .text).notNull()
             table.column("away", .text).notNull()

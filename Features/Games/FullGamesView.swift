@@ -17,11 +17,6 @@ struct FullGamesView: View {
         List(games) { game in
             gameView(for: game)
         }
-        .task {
-            if let game = games.last {
-                await fetchWPMetrics(for: game)
-            }
-        }
     }
     
     private func gameView(for game: Game) -> some View {
@@ -38,15 +33,19 @@ struct FullGamesView: View {
                 Text(game.scoreString)
                 Spacer()
                 Text(game.awayTeam)
+                detailsNavigationLink(for: game)
             }
         }
     }
     
-    private func fetchWPMetrics(for game: Game) async {
-        do {
-            try await networkClient.send(MetricsRequest.winProbabilityPlays(gameID: game.id))
-        } catch {
-            print(error)
+    private func detailsNavigationLink(for game: Game) -> some View {
+        NavigationLink {
+            GameDetailsView(
+                viewModel: GameDetailsViewModel(game: game)
+            )
+        } label: {
+            Image(symbol: .chevronRight)
         }
+
     }
 }

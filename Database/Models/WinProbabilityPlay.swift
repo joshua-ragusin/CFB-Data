@@ -31,3 +31,9 @@ extension WinProbabilityPlay: FetchableRecord, PersistableRecord {
 }
 
 extension WinProbabilityPlay: Identifiable {}
+
+extension WinProbabilityPlay {
+    var divergingProbability: Double {
+        (homeWinProbability - 0.5) * 100
+    }
+}
