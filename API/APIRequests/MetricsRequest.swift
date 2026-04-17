@@ -19,12 +19,22 @@ extension MetricsRequest: APIRequest {
     
     func handleResponse(_ response: [WinProbabilityPlayAPIGET]) throws {
         switch self {
-        case .winProbabilityPlays(let gameID):
+        case .winProbabilityPlays(_):
             try handleWinProbabilityPlaysRequest(response)
         }
     }
     
     private func handleWinProbabilityPlaysRequest(_ response: [WinProbabilityPlayAPIGET]) throws {
-        print(response)
+        @Injected(\.metricsStore) var metricsStore
+        
+        for apiWPPlay in response {
+            // Query DB to see if WPPlay exists. Save it if not.
+            if let dbResult = try? metricsStore.getWinProbabilityPlay(for: apiWPPlay.gameID, playNumber: apiWPPlay.playNumber) {
+                continue
+            } else {
+                print("Saving WPPlay for gameID: \(apiWPPlay.gameID) playNumber: \(apiWPPlay.playNumber)")
+                try! metricsStore.saveWinProbabilityPlay(apiWPPlay.toWinProbabilityPlay())
+            }
+        }
     }
 }
