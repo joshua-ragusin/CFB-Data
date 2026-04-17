@@ -57,6 +57,7 @@ class TugOfWarChartViewModel: ObservableObject {
     
     // MARK: - Matchup Games Info
     @Published var games: [MatchupGame]
+    @Published var fullGames: [Game]
     
     var currentWinStreak: WinStreak? {
         guard !games.isEmpty else { return nil }
@@ -91,6 +92,7 @@ class TugOfWarChartViewModel: ObservableObject {
         
         let store = InjectedValues[\.gameStore]
         games = (try? store.getMatchupGames(for: matchup.id).sorted(by: { $0.dateString > $1.dateString })) ?? []
+        fullGames = (try? store.getAllGamesBetweenTeams(team1.school, team2.school)) ?? []
     }
     
     func getTeamLogo(for teamID: Int) -> UIImage? {
@@ -116,6 +118,10 @@ class TugOfWarChartViewModel: ObservableObject {
                     print(error)
                 }
             }
+        }
+        
+        await MainActor.run {
+            fullGames = (try? gameStore.getAllGamesBetweenTeams(team1.school, team2.school)) ?? []
         }
     }
     

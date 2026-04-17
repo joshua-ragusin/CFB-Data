@@ -32,10 +32,12 @@ struct Game: Codable {
 // MARK: - GRDB
 extension Game: FetchableRecord, PersistableRecord {
     enum Columns: String, ColumnExpression {
-        case id, season, seasonType, homeID, homeTeam, awayID, awayTeam, homePoints, awayPoints, notes, neautralSite
+        case id, season, seasonType, homeID, homeTeam, awayID, awayTeam, homePoints, awayPoints, notes, neutralSite
         case dateString = "date"
     }
 }
+
+extension Game: Identifiable {}
 
 // MARK: - Computed Vars
 extension Game {

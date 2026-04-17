@@ -150,7 +150,7 @@ struct TugOfWarChartView: View {
     // MARK: - Full list of games
     
     private var fullListOfGamesButton: some View {
-        NavigationLink(destination: EmptyView()) {
+        NavigationLink(destination: FullGamesView(games: model.fullGames)) {
             HStack {
                 Text("Full Games List Page")
                 Image(symbol: .chevronRight)

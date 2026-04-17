@@ -93,4 +93,13 @@ class GameStore: InjectionKey {
                 .fetchOne(db)
         }
     }
+    
+    func getAllGamesBetweenTeams(_ team1: String, _ team2: String) throws -> [Game] {
+        try queue.read { db in
+            try Game
+                .filter(Game.Columns.homeTeam == team1 || Game.Columns.awayTeam == team1)
+                .filter(Game.Columns.homeTeam == team2 || Game.Columns.awayTeam == team2)
+                .fetchAll(db)
+        }
+    }
 }
