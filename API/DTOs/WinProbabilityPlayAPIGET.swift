@@ -22,4 +22,18 @@ struct WinProbabilityPlayAPIGET: Codable {
         case gameID = "gameId"
         case home, away, homeWinProbability, playNumber, yardLine, down, distance
     }
+    
+    func toWinProbabilityPlay() -> WinProbabilityPlay {
+        WinProbabilityPlay(
+            id: id,
+            gameID: gameID,
+            home: home,
+            away: away,
+            homeWinProbability: homeWinProbability,
+            playNumber: playNumber,
+            yardLine: yardLine,
+            down: down,
+            distance: distance
+        )
+    }
 }
