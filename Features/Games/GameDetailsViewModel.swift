@@ -10,7 +10,7 @@ import SwiftUI
 
 
 class GameDetailsViewModel: ObservableObject {
-    @Published var winProbabilityPlays: [WinProbabilityPlay]
+    @Published var winProbabilityPlays: [WinProbabilityPlay] = []
     @Published var isLoading = false
     
     let game: Game
@@ -20,31 +20,31 @@ class GameDetailsViewModel: ObservableObject {
     
     init(game: Game) {
         self.game = game
-        
-        let store = InjectedValues[\.metricsStore]
-        winProbabilityPlays = (try? store.getWinProbabilityPlays(for: game.id)) ?? []
     }
     
     func fetchWinProbabilityPlays() async {
-        await MainActor.run {
-            isLoading = true
+        await MainActor.run { isLoading = true }
+
+        let cached = (try? metricsStore.getWinProbabilityPlays(for: game.id)) ?? []
+        if !cached.isEmpty {
+            await MainActor.run {
+                winProbabilityPlays = cached
+                isLoading = false
+            }
+            return
         }
 
-        if winProbabilityPlays.isEmpty {
-            do {
-                print("API CALL: GET WP PLAYS FOR: \(game.id)")
-                try await networkClient.send(MetricsRequest.winProbabilityPlays(gameID: game.id))
-                
-                await MainActor.run {
-                    winProbabilityPlays = (try? metricsStore.getWinProbabilityPlays(for: game.id)) ?? []
-                }
-            } catch {
-                print(error)
+        do {
+            print("API CALL: GET WP PLAYS FOR: \(game.id)")
+            try await networkClient.send(MetricsRequest.winProbabilityPlays(gameID: game.id))
+            
+            await MainActor.run {
+                winProbabilityPlays = (try? metricsStore.getWinProbabilityPlays(for: game.id)) ?? []
             }
+        } catch {
+            print(error)
         }
         
-        await MainActor.run {
-            isLoading = false
-        }
+        await MainActor.run { isLoading = false }
     }
 }
