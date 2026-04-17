@@ -7,6 +7,7 @@
 
 enum GameRequest {
     case gamesTeams(team: String, year: Int)
+    case gamesYearTeams(year: Int, homeTeam: String, awayTeam: String)
 }
 
 extension GameRequest: APIRequest {
@@ -14,12 +15,16 @@ extension GameRequest: APIRequest {
         switch self {
         case .gamesTeams(let team, let year):
             .games(team: team, year: year)
+        case .gamesYearTeams(year: let year, homeTeam: let homeTeam, awayTeam: let awayTeam):
+                .gamesWithTeams(year: year, homeTeam: homeTeam, awayTeam: awayTeam)
         }
     }
     
     func handleResponse(_ response: [GameAPIGET]) throws {
         switch self {
         case .gamesTeams(_, _):
+            try handleGameTeamsResponse(response)
+        case .gamesYearTeams(_, _, _):
             try handleGameTeamsResponse(response)
         }
     }

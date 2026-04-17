@@ -56,12 +56,10 @@ class TugOfWarChartViewModel: ObservableObject {
     }
     
     // MARK: - Matchup Games Info
-    var games: [MatchupGame] {
-        (try? gameStore.getMatchupGames(for: matchup.id).sorted(by: { $0.dateString > $1.dateString })) ?? []
-    }
+    @Published var games: [MatchupGame]
     
-    var currentWinStreak: WinStreak {
-        let games = self.games
+    var currentWinStreak: WinStreak? {
+        guard !games.isEmpty else { return nil }
         
         let currentStreakWinner = games[0].awayScore > games[0].homeScore ? games[0].awayTeam : games[0].homeTeam
         let beginningDate = games[0].gameDate
@@ -84,11 +82,15 @@ class TugOfWarChartViewModel: ObservableObject {
     
     @Injected(\.teamStore) private var teamStore
     @Injected(\.gameStore) private var gameStore
+    @Injected(\.networkClient) private var networkClient
     
     init(matchup: Matchup, team1: Team, team2: Team) {
         self.matchup = matchup
         self.team1 = team1
         self.team2 = team2
+        
+        let store = InjectedValues[\.gameStore]
+        games = (try? store.getMatchupGames(for: matchup.id).sorted(by: { $0.dateString > $1.dateString })) ?? []
     }
     
     func getTeamLogo(for teamID: Int) -> UIImage? {
@@ -98,6 +100,27 @@ class TugOfWarChartViewModel: ObservableObject {
         }
         
         return teamLogo
+    }
+    
+    func fetchFullGameInfoBetweenTeams() async {
+        guard !games.isEmpty else { return }
+        
+        for game in games {
+            if let _ = try? gameStore.getGame(in: game.season, homeTeam: game.homeTeam, awayTeam: game.awayTeam) {
+                continue
+            } else {
+                do {
+                    print("API CALL: Game for \(game.homeTeam) - \(game.awayTeam) in \(game.season)")
+                    try await handleGameRequest(in: game.season, homeTeam: game.homeTeam, awayTeam: game.awayTeam)
+                } catch {
+                    print(error)
+                }
+            }
+        }
+    }
+    
+    private func handleGameRequest(in year: Int, homeTeam: String, awayTeam: String) async throws {
+        try await networkClient.send(GameRequest.gamesYearTeams(year: year, homeTeam: homeTeam, awayTeam: awayTeam))
     }
 }
 

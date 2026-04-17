@@ -26,12 +26,12 @@ struct TugOfWarChartView: View {
                 teamLogo(for: model.team2)
             }
             
-            // Current Win Streak
             currentWinStreakView
-            // Win streak view
-            // Full games button
             fullListOfGamesButton
             headToHeadResultsLink
+        }
+        .task {
+            await model.fetchFullGameInfoBetweenTeams()
         }
     }
     
@@ -125,13 +125,15 @@ struct TugOfWarChartView: View {
         return VStack(alignment: .center) {
                 Text("Current Win Streak")
             HStack {
-                Text("\(currentWinStreak.streak) \(currentWinStreak.team.school)")
-                Text(currentWinStreak.beginningDate, format: .dateTime.year())
-                Text(" - ")
-                Text(currentWinStreak.endDate, format: .dateTime.year())
+                if let currentWinStreak {
+                    Text("\(currentWinStreak.streak) \(currentWinStreak.team.school)")
+                    Text(currentWinStreak.beginningDate, format: .dateTime.year())
+                    Text(" - ")
+                    Text(currentWinStreak.endDate, format: .dateTime.year())
+                }
             }
             .fontWeight(.semibold)
-            .foregroundStyle(currentWinStreak.team.color)
+            .foregroundStyle(currentWinStreak?.team.color ?? .black)
         }
     }
     

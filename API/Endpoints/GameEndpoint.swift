@@ -7,12 +7,14 @@
 
 enum GameEndpoint {
     case games(team: String, year: Int)
+    case gamesWithTeams(year: Int, homeTeam: String, awayTeam: String)
 }
 
 extension GameEndpoint: Endpoint {
     var path: String {
         switch self {
-        case .games(_, _):
+        case .games(_, _),
+             .gamesWithTeams(_, _, _):
             "/games"
         }
     }
@@ -23,6 +25,12 @@ extension GameEndpoint: Endpoint {
             [
                 "year": String(year),
                 "team": team
+            ]
+        case .gamesWithTeams(let year, let homeTeam, let awayTeam):
+            [
+                "year": String(year),
+                "home": homeTeam,
+                "away": awayTeam
             ]
         }
     }

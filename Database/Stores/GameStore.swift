@@ -83,4 +83,14 @@ class GameStore: InjectionKey {
                 .fetchAll(db)
         }
     }
+    
+    func getGame(in year: Int, homeTeam: String, awayTeam: String) throws -> Game? {
+        try queue.read { db in
+            try Game
+                .filter(Game.Columns.season == year)
+                .filter(Game.Columns.homeTeam == homeTeam)
+                .filter(Game.Columns.awayTeam == awayTeam)
+                .fetchOne(db)
+        }
+    }
 }
