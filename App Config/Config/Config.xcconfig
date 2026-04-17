@@ -1,0 +1,11 @@
+//
+//  Config.xcconfig
+//  CFB-Data
+//
+//  Created by Joshua Ragusin on 4/16/26.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://developer.apple.com/documentation/xcode/adding-a-build-configuration-file-to-your-project
+
+CFBD_API_KEY = 4O5Xjq4AI/IRNgU/vIDcUKeK05TJ0oujATPsIt210OkWYL1txJBSnCudYbV3iU8l
