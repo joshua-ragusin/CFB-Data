@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UIKit
 
 struct TeamScheduleView: View {
     @StateObject var viewModel: TeamScheduleViewModel
@@ -14,123 +15,134 @@ struct TeamScheduleView: View {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
     
-    var teamLogoSize: CGFloat {
-        25.0
-    }
-    
     var body: some View {
-        VStack {
+        // 6. Show loading/empty/content states at the top level so
+        //    ProgressView and ContentUnavailableView can center properly.
+        Group {
             if viewModel.isLoading {
-                refreshView
+                ProgressView("Loading schedule...")
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
+            } else if viewModel.games.isEmpty {
+                // 7. Empty state
+                ContentUnavailableView(
+                    "No Games Found",
+                    systemImage: "calendar.badge.exclamationmark",
+                    description: Text("No games are available for the \(viewModel.year) season.")
+                )
             } else {
-                scheduleView
+                // 1. List gives built-in scrolling and row separators
+                gameList
             }
         }
-        .navigationTitle("\(viewModel.teamName) \(viewModel.year) Season")
+        .navigationTitle("\(viewModel.teamName) \(viewModel.year)")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadGames()
         }
     }
     
-    private var refreshView: some View {
-        ProgressView()
+    // MARK: - Game List
+    
+    private var gameList: some View {
+        List(viewModel.games) { game in
+            gameRow(for: game)
+                .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 16))
+        }
+        .listStyle(.plain)
     }
     
-    private var scheduleView: some View {
-        Grid {
-            GridRow {
-                Text("Result")
-                Text("Date")
-                Text("Opponent")
-                Text("Score")
-                Text("Notes")
+    // MARK: - Game Row
+    
+    // 2. Redesigned row: result badge | opponent info | score + date
+    private func gameRow(for game: Game) -> some View {
+        HStack(spacing: 12) {
+            resultBadge(for: game)
+            opponentInfo(for: game)
+            Spacer()
+            scoreAndDate(for: game)
+        }
+    }
+    
+    private func resultBadge(for game: Game) -> some View {
+        let (letter, color): (String, Color) = {
+            switch viewModel.gameResult(game) {
+            case .win:  return ("W", .green)
+            case .loss: return ("L", .red)
+            case .tie:  return ("T", .gray)
             }
+        }()
+        
+        return Text(letter)
+            .font(.subheadline)
+            .fontWeight(.bold)
+            .foregroundStyle(color)
+            .frame(width: 20)
+    }
+    
+    // 3. Notes appear inline below opponent name, not as a separate column
+    private func opponentInfo(for game: Game) -> some View {
+        HStack(spacing: 8) {
+            opponentLogo(for: game)
             
-            ForEach(viewModel.games, id: \.id) { game in
-                gridRow(for: game)
-            }
-        }
-    }
-    
-    private func gridRow(for game: Game) -> some View {
-        GridRow {
-            resultColumn(for: game)
-            dateColumn(for: game.date)
-            opponentColumn(for: game)
-            Text(game.scoreString)
-            Text(game.notes ?? "")
-        }
-    }
-    
-    private func resultColumn(for game: Game) -> some View {
-        switch viewModel.gameResult(game) {
-        case .win:
-            Text("W")
-                .foregroundStyle(.green)
-                .fontWeight(.semibold)
-        case .loss:
-            Text("L")
-                .foregroundStyle(.red)
-                .fontWeight(.semibold)
-        case .tie:
-            Text("T")
-                .fontWeight(.semibold)
-        }
-    }
-    
-    private func opponentColumn(for game: Game) -> some View {
-        HStack {
-            if let opponentID = viewModel.getOpponentID(game) {
-                HStack(spacing: 0) {
-                    getOpponentImage(for: opponentID)
-                    
+            VStack(alignment: .leading, spacing: 2) {
+                HStack(spacing: 6) {
+                    Text(viewModel.getOpponentName(game))
+                        .font(.subheadline)
+                    // 4. Neutral site as a small pill badge
                     if game.neutralSite {
-                        Text("(N)")
+                        Text("N")
+                            .font(.caption2)
+                            .fontWeight(.semibold)
+                            .padding(.horizontal, 5)
+                            .padding(.vertical, 2)
+                            .background(.secondary.opacity(0.2))
+                            .clipShape(Capsule())
                     }
                 }
-            } else {
-                HStack(spacing: 0) {
-                    genericOpponentImage(for: viewModel.getOpponentName(game).initialized())
-                    
-                    if game.neutralSite {
-                        Text("(N)")
-                    }
+                if let notes = game.notes {
+                    Text(notes)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .lineLimit(1)
                 }
             }
-            
-            Text(viewModel.getOpponentName(game))
         }
     }
     
-    private func getOpponentImage(for opponentID: Int) -> some View {
-        if let uiImage = viewModel.getTeamLogo(for: opponentID) {
+    // 5. Fixed content mode: .fit instead of .fill for logos
+    @ViewBuilder
+    private func opponentLogo(for game: Game) -> some View {
+        let size: CGFloat = 30
+        if let opponentID = viewModel.getOpponentID(game),
+           let uiImage = viewModel.getTeamLogo(for: opponentID) {
             Image(uiImage: uiImage)
                 .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: teamLogoSize, height: teamLogoSize)
+                .aspectRatio(contentMode: .fit)
+                .frame(width: size, height: size)
         } else {
-            Image(symbol: .exclamationMarkTriangleFill)
-                .resizable()
-                .aspectRatio(contentMode: .fill)
-                .frame(width: teamLogoSize, height: teamLogoSize)
+            ZStack {
+                Circle()
+                    .foregroundStyle(.secondary.opacity(0.15))
+                Text(viewModel.getOpponentName(game).initialized())
+                    .font(.caption2)
+                    .fontWeight(.semibold)
+            }
+            .frame(width: size, height: size)
         }
     }
     
-    private func genericOpponentImage(for opponent: String) -> some View {
-        ZStack {
-            Circle()
-                .foregroundStyle(.gray)
-            Text(opponent)
-        }
-        .frame(width: teamLogoSize, height: teamLogoSize)
-    }
-    
-    private func dateColumn(for gameDate: Date?) -> some View {
-        if let gameDate {
-            Text(gameDate, format: .dateTime.day().month(.abbreviated).year())
-        } else {
-            Text("")
+    // Score stacked above date, right-aligned
+    private func scoreAndDate(for game: Game) -> some View {
+        VStack(alignment: .trailing, spacing: 2) {
+            Text(game.scoreString)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .monospacedDigit()
+            if let date = game.date {
+                Text(date, format: .dateTime.month(.abbreviated).day())
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
     }
 }
