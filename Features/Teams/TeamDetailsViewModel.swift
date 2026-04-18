@@ -13,8 +13,13 @@ class TeamDetailsViewModel: ObservableObject {
 
     @Injected(\.networkClient) private var networkClient
     @Injected(\.recordStore) private var recordStore
+    @Injected(\.teamStore) private var teamStore
     
     let team: Team
+    
+    var teamLogoData: Data? {
+        try? teamStore.getTeamLogo(teamID: team.id)?.logoData
+    }
     
     init(team: Team) {
         self.team = team
