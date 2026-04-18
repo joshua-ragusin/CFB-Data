@@ -8,14 +8,9 @@
 import Foundation
 
 enum UITestConstants {
-    enum delay: TimeInterval {
-        case veryShort = 1.0
-        case short = 2.5
-        case standard = 5.0
-        case long = 10.0
-    }
-    
+    // 4. Merged delay and timeout — both represented the same concept
     enum timeout: TimeInterval {
+        case veryShort = 1.0
         case short = 2.5
         case standard = 5.0
         case long = 10.0

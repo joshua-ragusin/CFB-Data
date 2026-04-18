@@ -16,9 +16,8 @@ struct TeamListPage: Page {
     
     @discardableResult
     func searchForTeamExpectingResult(_ team: String) -> Self {
-        let teamList = app.tables[Identifier.teamList.rawValue]
+        let teamList = app.collectionViews[Identifier.teamList.rawValue]
         
-        // Swipe dowen if the search bar is not currently visible
         if !isSearchBarCurrentlyVisible() {
             teamList.swipeDown()
         }
@@ -29,29 +28,20 @@ struct TeamListPage: Page {
     }
     
     @discardableResult
-    func searchForTeamExpectingNothing() -> Self {
+    func searchForTeamExpectingNothing(_ term: String = "zzzzzzzzz") -> Self {
         let teamList = app.collectionViews[Identifier.teamList.rawValue]
         
-        // Swipe down if the search bar is not visible
         if !isSearchBarCurrentlyVisible() {
             teamList.swipeDown()
         }
         
         let searchField = app.searchFields[searchBarPlaceholder]
-        searchField.clearAndType("efefefefefe")
+        searchField.clearAndType(term)
 
         let noResults = app.images[Identifier.noResults.rawValue]
-        
-        XCTAssertTrue(noResults.waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue))
+        XCTAssertTrue(noResults.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
         
         app.buttons["Cancel"].tap()
-        return self
-    }
-    
-    @discardableResult
-    func verifyTableAppearsAfterAppLaunch() -> Self {
-        let teamList = app.collectionViews[Identifier.teamList.rawValue]
-        XCTAssertTrue(teamList.waitForExistence(timeout: UITestConstants.timeout.long.rawValue))
         return self
     }
     
@@ -72,9 +62,8 @@ struct TeamListPage: Page {
     
     @discardableResult
     func clearSearchBarText() -> Self {
-        let teamList = app.tables[Identifier.teamList.rawValue]
+        let teamList = app.collectionViews[Identifier.teamList.rawValue]
         
-        // Swipe down if the search bar is not visible
         if !isSearchBarCurrentlyVisible() {
             teamList.swipeDown()
         }
@@ -89,24 +78,21 @@ struct TeamListPage: Page {
     @discardableResult
     func tapOnTeamCell(_ team: String) -> Self {
         let teamList = app.collectionViews[Identifier.teamList.rawValue]
-        
         let teamCell = teamList.cells.containing(.staticText, identifier: team).firstMatch
-        
-        XCTAssertTrue(teamCell.waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue))
+        XCTAssertTrue(teamCell.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
         teamCell.tap()
-        
         return self
     }
     
     @discardableResult
     func verifyTeamDetailsViewIsDisplayed() -> Self {
         let seasonList = app.scrollViews[TeamDetailsViewIdentifier.seasonList.rawValue]
-        XCTAssertTrue(seasonList.waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue))
+        XCTAssertTrue(seasonList.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
         app.tapBackButton()
         return self
     }
     
     private func isSearchBarCurrentlyVisible() -> Bool {
-        app.searchFields[searchBarPlaceholder].waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue)
+        app.searchFields[searchBarPlaceholder].waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue)
     }
 }
