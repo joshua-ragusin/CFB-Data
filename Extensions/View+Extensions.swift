@@ -11,4 +11,8 @@ extension View {
     func lockOrientation(_ orientation: UIInterfaceOrientationMask) -> some View {
         modifier(OrientationLocKModiifer(orientation: orientation))
     }
+    
+    func accessibilityID(_ identifier: any AccessibilityIdentifiable) -> some View {
+        accessibilityIdentifier(identifier.rawValue)
+    }
 }
