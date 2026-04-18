@@ -6,7 +6,6 @@
 //
 
 import SwiftUI
-import NukeUI
 import UIKit
 
 struct TeamListView: View {
@@ -18,13 +17,13 @@ struct TeamListView: View {
                 if model.isLoading {
                     ProgressView("Loading...")
                 } else if let errorMessage = model.errorMesssage {
-                    Text(errorMessage)
+                    errorView(message: errorMessage)
                 } else {
                     teamList
                 }
             }
             .navigationTitle("Teams")
-            .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.large)
         }
         .task {
             await model.loadTeams()
@@ -37,6 +36,28 @@ struct TeamListView: View {
         }
         .listStyle(.plain)
         .searchable(text: $model.searchText)
+        .overlay {
+            if !model.searchText.isEmpty && model.searchResults.isEmpty {
+                ContentUnavailableView.search(text: model.searchText)
+            }
+        }
+    }
+    
+    private func errorView(message: String) -> some View {
+        VStack(spacing: 16) {
+            Image(symbol: .exclamationMarkTriangleFill)
+                .resizable()
+                .frame(width: 44, height: 44)
+                .foregroundStyle(.red)
+            Text(message)
+                .multilineTextAlignment(.center)
+                .foregroundStyle(.secondary)
+            Button("Retry") {
+                Task { await model.loadTeams() }
+            }
+            .buttonStyle(.borderedProminent)
+        }
+        .padding()
     }
     
     private func teamLink(for team: Team) -> some View {
@@ -44,28 +65,44 @@ struct TeamListView: View {
             TeamDetailsView(model: TeamDetailsViewModel(team: team))
                 .toolbarVisibility(.hidden, for: .tabBar)
         } label: {
-            HStack(spacing: 25) {
-                if let data = model.getTeamLogoData(for: team.id),
-                   let uiImage = UIImage(data: data) {
-                    Image(uiImage: uiImage)
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 75, height: 75)
-                        .padding(.horizontal)
-                } else {
-                    Image(symbol: .exclamationMarkTriangleFill)
-                        .resizable()
-                        .frame(width: 75, height: 75)
-                        .foregroundStyle(.red)
-                        .padding(.horizontal)
-                }
-                
-                VStack(alignment: .center) {
+            HStack(spacing: 16) {
+                logoView(for: team)
+
+                VStack(alignment: .leading, spacing: 2) {
                     Text(team.school)
+                        .font(.headline)
                     Text(team.mascot)
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+                    Text(team.conference)
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
                 
                 Spacer()
+            }
+            .padding(.vertical, 4)
+        }
+    }
+    
+    private func logoView(for team: Team) -> some View {
+        ZStack {
+            RoundedRectangle(cornerRadius: 8)
+                .fill(team.color.opacity(0.15))
+                .frame(width: 60, height: 60)
+            
+            if let data = model.getTeamLogoData(for: team.id),
+               let uiImage = UIImage(data: data) {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 48, height: 48)
+            } else {
+                Image(symbol: .exclamationMarkTriangleFill)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: 32, height: 32)
+                    .foregroundStyle(.red)
             }
         }
     }
