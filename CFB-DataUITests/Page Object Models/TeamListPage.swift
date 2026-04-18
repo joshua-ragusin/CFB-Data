@@ -76,20 +76,12 @@ struct TeamListPage: Page {
     }
     
     @discardableResult
-    func tapOnTeamCell(_ team: String) -> Self {
+    func tapOnTeamCell(_ team: String) -> TeamDetailsPage {
         let teamList = app.collectionViews[Identifier.teamList.rawValue]
         let teamCell = teamList.cells.containing(.staticText, identifier: team).firstMatch
         XCTAssertTrue(teamCell.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
         teamCell.tap()
-        return self
-    }
-    
-    @discardableResult
-    func verifyTeamDetailsViewIsDisplayed() -> Self {
-        let seasonList = app.scrollViews[TeamDetailsViewIdentifier.seasonList.rawValue]
-        XCTAssertTrue(seasonList.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        app.tapBackButton()
-        return self
+        return TeamDetailsPage(app: app)
     }
     
     private func isSearchBarCurrentlyVisible() -> Bool {

@@ -35,6 +35,7 @@ class TeamListViewTests: XCTestCase {
         TeamListPage(app: app)
             .verifyTeamsAreDisplayed()
             .tapOnTeamCell("Alabama")
-            .verifyTeamDetailsViewIsDisplayed()
+            .verifyIsDisplayed()
+            .navigateBack()
     }
 }
