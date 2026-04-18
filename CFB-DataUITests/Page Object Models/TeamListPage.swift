@@ -9,4 +9,104 @@ import XCTest
 
 struct TeamListPage: Page {
     let app: XCUIApplication
+    
+    typealias Identifier = TeamListViewIdentifier
+    
+    private let searchBarPlaceholder = "Search"
+    
+    @discardableResult
+    func searchForTeamExpectingResult(_ team: String) -> Self {
+        let teamList = app.tables[Identifier.teamList.rawValue]
+        
+        // Swipe dowen if the search bar is not currently visible
+        if !isSearchBarCurrentlyVisible() {
+            teamList.swipeDown()
+        }
+        
+        let searchField = app.searchFields[searchBarPlaceholder]
+        searchField.clearAndType(team)
+        return self
+    }
+    
+    @discardableResult
+    func searchForTeamExpectingNothing() -> Self {
+        let teamList = app.collectionViews[Identifier.teamList.rawValue]
+        
+        // Swipe down if the search bar is not visible
+        if !isSearchBarCurrentlyVisible() {
+            teamList.swipeDown()
+        }
+        
+        let searchField = app.searchFields[searchBarPlaceholder]
+        searchField.clearAndType("efefefefefe")
+
+        let noResults = app.images[Identifier.noResults.rawValue]
+        
+        XCTAssertTrue(noResults.waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue))
+        
+        app.buttons["Cancel"].tap()
+        return self
+    }
+    
+    @discardableResult
+    func verifyTableAppearsAfterAppLaunch() -> Self {
+        let teamList = app.collectionViews[Identifier.teamList.rawValue]
+        XCTAssertTrue(teamList.waitForExistence(timeout: UITestConstants.timeout.long.rawValue))
+        return self
+    }
+    
+    @discardableResult
+    func verifyTeamsAreDisplayed(count: Int? = nil) -> Self {
+        let teamList = app.collectionViews[Identifier.teamList.rawValue]
+        
+        if let count {
+            XCTAssertEqual(teamList.cellCount, count)
+        } else {
+            XCTAssertGreaterThan(teamList.cellCount, 0)
+        }
+        
+        XCTAssertTrue(!app.otherElements[Identifier.noResults.rawValue].exists)
+        
+        return self
+    }
+    
+    @discardableResult
+    func clearSearchBarText() -> Self {
+        let teamList = app.tables[Identifier.teamList.rawValue]
+        
+        // Swipe down if the search bar is not visible
+        if !isSearchBarCurrentlyVisible() {
+            teamList.swipeDown()
+        }
+        
+        let searchField = app.searchFields[searchBarPlaceholder]
+        searchField.clearAndType("")
+        app.buttons["Cancel"].tap()
+
+        return self
+    }
+    
+    @discardableResult
+    func tapOnTeamCell(_ team: String) -> Self {
+        let teamList = app.collectionViews[Identifier.teamList.rawValue]
+        
+        let teamCell = teamList.cells.containing(.staticText, identifier: team).firstMatch
+        
+        XCTAssertTrue(teamCell.waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue))
+        teamCell.tap()
+        
+        return self
+    }
+    
+    @discardableResult
+    func verifyTeamDetailsViewIsDisplayed() -> Self {
+        let seasonList = app.scrollViews[TeamDetailsViewIdentifier.seasonList.rawValue]
+        XCTAssertTrue(seasonList.waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue))
+        app.tapBackButton()
+        return self
+    }
+    
+    private func isSearchBarCurrentlyVisible() -> Bool {
+        app.searchFields[searchBarPlaceholder].waitForExistence(timeout: UITestConstants.delay.veryShort.rawValue)
+    }
 }

@@ -9,4 +9,5 @@ enum TeamListViewIdentifier: String, AccessibilityIdentifiable {
     case teamList
     case navigationTitle
     case teamCell
+    case noResults
 }

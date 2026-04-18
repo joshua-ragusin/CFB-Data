@@ -11,6 +11,8 @@ import UIKit
 struct TeamListView: View {
     @StateObject private var model = TeamListViewModel()
     
+    typealias Identifier = TeamListViewIdentifier
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -39,8 +41,11 @@ struct TeamListView: View {
         .overlay {
             if !model.searchText.isEmpty && model.searchResults.isEmpty {
                 ContentUnavailableView.search(text: model.searchText)
+                    .accessibilityID(Identifier.noResults)
+                    .accessibilityElement(children: .combine)
             }
         }
+        .accessibilityID(Identifier.teamList)
     }
     
     private func errorView(message: String) -> some View {

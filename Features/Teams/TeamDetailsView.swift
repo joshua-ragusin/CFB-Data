@@ -11,6 +11,8 @@ import UIKit
 struct TeamDetailsView: View {
     @StateObject private var model: TeamDetailsViewModel
     
+    typealias Identifier = TeamDetailsViewIdentifier
+    
     init(model: TeamDetailsViewModel) {
         self._model = StateObject(wrappedValue: model)
     }
@@ -41,6 +43,7 @@ struct TeamDetailsView: View {
         .task {
             await model.fetchRecord()
         }
+        .accessibilityID(Identifier.seasonList)
     }
     
     private var teamHeader: some View {
