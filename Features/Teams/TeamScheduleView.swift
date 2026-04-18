@@ -16,21 +16,17 @@ struct TeamScheduleView: View {
     }
     
     var body: some View {
-        // 6. Show loading/empty/content states at the top level so
-        //    ProgressView and ContentUnavailableView can center properly.
         Group {
             if viewModel.isLoading {
                 ProgressView("Loading schedule...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if viewModel.games.isEmpty {
-                // 7. Empty state
                 ContentUnavailableView(
                     "No Games Found",
                     systemImage: "calendar.badge.exclamationmark",
                     description: Text("No games are available for the \(viewModel.year) season.")
                 )
             } else {
-                // 1. List gives built-in scrolling and row separators
                 gameList
             }
         }
@@ -53,7 +49,6 @@ struct TeamScheduleView: View {
     
     // MARK: - Game Row
     
-    // 2. Redesigned row: result badge | opponent info | score + date
     private func gameRow(for game: Game) -> some View {
         HStack(spacing: 12) {
             resultBadge(for: game)
@@ -79,7 +74,6 @@ struct TeamScheduleView: View {
             .frame(width: 20)
     }
     
-    // 3. Notes appear inline below opponent name, not as a separate column
     private func opponentInfo(for game: Game) -> some View {
         HStack(spacing: 8) {
             opponentLogo(for: game)
@@ -88,7 +82,6 @@ struct TeamScheduleView: View {
                 HStack(spacing: 6) {
                     Text(viewModel.getOpponentName(game))
                         .font(.subheadline)
-                    // 4. Neutral site as a small pill badge
                     if game.neutralSite {
                         Text("N")
                             .font(.caption2)
@@ -109,7 +102,6 @@ struct TeamScheduleView: View {
         }
     }
     
-    // 5. Fixed content mode: .fit instead of .fill for logos
     @ViewBuilder
     private func opponentLogo(for game: Game) -> some View {
         let size: CGFloat = 30

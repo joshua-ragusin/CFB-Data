@@ -16,18 +16,14 @@ struct TeamDetailsView: View {
     }
     
     var body: some View {
-        // 1. NavigationStack removed — this view is already pushed onto
-        //    TeamListView's NavigationStack via NavigationLink.
         ScrollView {
             VStack(spacing: 0) {
                 teamHeader
                 
-                // 6. Centered loading state
                 if model.isLoading {
                     ProgressView()
                         .frame(maxWidth: .infinity)
                         .padding(.top, 60)
-                // 7. Empty records state
                 } else if model.records.isEmpty {
                     ContentUnavailableView(
                         "No Records",
@@ -47,7 +43,6 @@ struct TeamDetailsView: View {
         }
     }
     
-    // 2. Team header banner with logo, mascot, conference, and team color
     private var teamHeader: some View {
         HStack(spacing: 16) {
             if let data = model.teamLogoData,
@@ -76,7 +71,6 @@ struct TeamDetailsView: View {
     
     private func recordsGrid(for records: [Record]) -> some View {
         Grid(horizontalSpacing: 16, verticalSpacing: 12) {
-            // 3. Styled header row
             GridRow {
                 Text("Year")
                 Text("Conference")
@@ -87,7 +81,6 @@ struct TeamDetailsView: View {
             .fontWeight(.semibold)
             .foregroundStyle(.secondary)
             
-            // 4. Divider spanning full grid width between header and data
             Divider()
             
             ForEach(records, id: \.id) {
@@ -97,7 +90,6 @@ struct TeamDetailsView: View {
         .padding()
     }
     
-    // 5. Data rows use .subheadline for dense tabular content
     private func gridRow(for record: Record) -> some View {
         GridRow {
             Text(String(record.year))
@@ -108,7 +100,6 @@ struct TeamDetailsView: View {
         .font(.subheadline)
     }
     
-    // 8. "View" text label instead of a bare arrow icon
     private func viewScheduleLink(for record: Record) -> some View {
         NavigationLink(destination:
             TeamScheduleView(
