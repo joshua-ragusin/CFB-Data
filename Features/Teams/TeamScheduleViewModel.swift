@@ -19,11 +19,19 @@ class TeamScheduleViewModel: ObservableObject {
     let teamName: String
     let year: Int
     let teamID: Int
+    let totalGames: Int
     
-    init(teamName: String, year: Int, teamID: Int) {
-        self.teamName = teamName
-        self.year = year
-        self.teamID = teamID
+    init(record: Record) {
+        self.teamName = record.team
+        self.year = record.year
+        self.teamID = record.teamID
+        
+        let store = InjectedValues[\.recordStore]
+        if let totalRecordCategory = try? store.getRecordCategory(with: record.totalRecordID) {
+            self.totalGames = totalRecordCategory.wins + totalRecordCategory.losses + totalRecordCategory.ties
+        } else {
+            self.totalGames = -1
+        }
     }
     
     func loadGames() async {
@@ -34,7 +42,7 @@ class TeamScheduleViewModel: ObservableObject {
         do {
             let games = try gameStore.getGames(for: teamID, in: year)
             
-            if games.isEmpty {
+            if totalGames < 0 || games.count < totalGames {
                 try await fetchGames()
                 let savedGames = try gameStore.getGames(for: teamID, in: year)
                 

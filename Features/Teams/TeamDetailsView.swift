@@ -111,12 +111,8 @@ struct TeamDetailsView: View {
     // 8. "View" text label instead of a bare arrow icon
     private func viewScheduleLink(for record: Record) -> some View {
         NavigationLink(destination:
-            TeamScheduleView(viewModel:
-                TeamScheduleViewModel(
-                    teamName: record.team,
-                    year: record.year,
-                    teamID: record.teamID
-                )
+            TeamScheduleView(
+                viewModel: TeamScheduleViewModel(record: record)
             )
         ) {
             Text("View")
