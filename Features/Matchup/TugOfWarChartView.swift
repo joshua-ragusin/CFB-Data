@@ -11,6 +11,8 @@ import UIKit
 struct TugOfWarChartView: View {
     @StateObject private var model: TugOfWarChartViewModel
     
+    typealias Identifier = TugOfWarViewIdentifier
+    
     init(model: TugOfWarChartViewModel) {
         self._model = StateObject(wrappedValue: model)
     }
@@ -150,6 +152,7 @@ struct TugOfWarChartView: View {
                 Rectangle()
                     .fill(model.team2.color)
             }
+            .accessibilityID(Identifier.tugOfWarChart)
         }
         .frame(height: 28)
         .clipShape(RoundedRectangle(cornerRadius: 8))
@@ -196,39 +199,48 @@ struct TugOfWarChartView: View {
     
     private var navigationLinks: some View {
         VStack(spacing: 10) {
-            NavigationLink {
-                FullGamesView(games: model.fullGames)
-            } label: {
-                HStack {
-                    Image(symbol: .listBulletinFill)
-                    Text("Full Games List")
-                    Spacer()
-                    Image(symbol: .chevronRight)
-                }
-                .padding()
-                .background(Color.secondary.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-            .buttonStyle(.plain)
-            
-            NavigationLink {
-                HeadToHeadChartView(viewModel: HeadToHeadChartViewModel(
-                    matchupID: model.matchup.id,
-                    positiveTeam: model.team1,
-                    negativeTeam: model.team2
-                ))
-            } label: {
-                HStack {
-                    Image(symbol: .americanFootball)
-                    Text("Head to Head Results")
-                    Spacer()
-                    Image(symbol: .chevronRight)
-                }
-                .padding()
-                .background(Color.secondary.opacity(0.1))
-                .clipShape(RoundedRectangle(cornerRadius: 10))
-            }
-            .buttonStyle(.plain)
+            fullGamesNavigationLink
+            headToHeadNavigationLink
         }
+    }
+    
+    private var fullGamesNavigationLink: some View {
+        NavigationLink {
+            FullGamesView(games: model.fullGames)
+        } label: {
+            HStack {
+                Image(symbol: .listBulletinFill)
+                Text("Full Games List")
+                Spacer()
+                Image(symbol: .chevronRight)
+            }
+            .padding()
+            .background(Color.secondary.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .buttonStyle(.plain)
+        .accessibilityID(Identifier.fullGamesListLink)
+    }
+    
+    private var headToHeadNavigationLink: some View {
+        NavigationLink {
+            HeadToHeadChartView(viewModel: HeadToHeadChartViewModel(
+                matchupID: model.matchup.id,
+                positiveTeam: model.team1,
+                negativeTeam: model.team2
+            ))
+        } label: {
+            HStack {
+                Image(symbol: .americanFootball)
+                Text("Head to Head Results")
+                Spacer()
+                Image(symbol: .chevronRight)
+            }
+            .padding()
+            .background(Color.secondary.opacity(0.1))
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+        }
+        .buttonStyle(.plain)
+        .accessibilityID(Identifier.headToHeadResultsLink)
     }
 }

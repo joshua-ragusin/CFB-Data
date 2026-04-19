@@ -5,6 +5,6 @@
 //  Created by Joshua Ragusin on 4/17/26.
 //
 
-enum HeadToHeadchartViewIdentifier: String, AccessibilityIdentifiable {
+enum HeadToHeadChartViewIdentifier: String, AccessibilityIdentifiable {
     case headToHeadChart
 }

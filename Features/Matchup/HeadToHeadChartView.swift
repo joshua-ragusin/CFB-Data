@@ -14,6 +14,8 @@ struct HeadToHeadChartView: View {
     @State private var selectedDate: Int?
     @State private var tooltipSize: CGSize = .zero
     
+    typealias Identifier = HeadToHeadChartViewIdentifier
+    
     init(viewModel: HeadToHeadChartViewModel) {
         _viewModel = StateObject(wrappedValue: viewModel)
     }
@@ -33,6 +35,7 @@ struct HeadToHeadChartView: View {
             .foregroundStyle(difference > 0 ? Color(hex: viewModel.positiveTeam.hexColor) : Color(hex: viewModel.negativeTeam.hexColor))
         }
         .navigationTitle("Head to Head Results")
+        .accessibilityID(Identifier.headToHeadChart)
         .lockOrientation(.landscape)
         .chartXScale(domain: viewModel.xAxisDomain)
         .chartYScale(domain: viewModel.yAxisDomain)

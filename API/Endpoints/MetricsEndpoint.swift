@@ -12,7 +12,7 @@ enum MetricsEndpoint {
 extension MetricsEndpoint: Endpoint {
     var path: String {
         switch self {
-        case .winProbabilityPlays(let gameID):
+        case .winProbabilityPlays(_):
             "/metrics/wp"
         }
     }

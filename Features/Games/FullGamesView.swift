@@ -13,10 +13,13 @@ struct FullGamesView: View {
     
     @Injected(\.networkClient) private var networkClient
     
+    typealias Identifier = FullGameViewIdentifier
+    
     var body: some View {
         List(games) { game in
             gameView(for: game)
         }
+        .accessibilityID(Identifier.gamesList)
     }
     
     private func gameView(for game: Game) -> some View {
