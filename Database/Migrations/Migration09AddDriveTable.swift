@@ -13,6 +13,7 @@ struct Migration09AddDriveTable: Migration {
     func migrate(_ db: GRDB.Database) throws {
         try db.create(table: "Drive") { table in
             table.column("id", .text)
+                .primaryKey()
             table.column("gameID", .integer)
                 .references("Game")
             table.column("driveNumber", .integer)

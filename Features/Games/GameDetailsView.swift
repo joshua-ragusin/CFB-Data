@@ -39,6 +39,7 @@ struct GameDetailsView: View {
         }
         .task {
             await viewModel.fetchWinProbabilityPlays()
+            await viewModel.fetchPlays()
             await viewModel.fetchDrives()
         }
     }

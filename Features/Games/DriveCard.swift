@@ -27,7 +27,7 @@ struct DriveCard: View {
                     logoView
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(drive.driveHeaderTitle)
+                        Text(drive.driveResult)
                             .font(.headline)
                             .foregroundStyle(.primary)
                         
@@ -87,7 +87,7 @@ struct DriveCard: View {
         }
     }
     
-    private func playCard(for play: WinProbabilityPlay) -> some View {
+    private func playCard(for play: Play) -> some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(spacing: 8) {
                 VStack(alignment: .leading, spacing: 2) {

@@ -56,4 +56,9 @@ extension InjectedValues {
         get { Self[DriveStore.self] }
         set { Self[DriveStore.self] = newValue }
     }
+    
+    var playStore: PlayStore {
+        get { Self[PlayStore.self] }
+        set { Self[PlayStore.self] = newValue }
+    }
 }

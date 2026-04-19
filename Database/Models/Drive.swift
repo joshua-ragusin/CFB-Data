@@ -16,7 +16,7 @@ struct Drive: Codable, Identifiable {
     let isHomeOffense: Bool
     let driveResult: String
     
-    var groupedPlays: [WinProbabilityPlay] = []
+    var groupedPlays: [Play] = []
     
     enum CodingKeys: String, CodingKey {
         case id, gameID, driveNumber, plays, yards, isHomeOffense, driveResult
@@ -26,11 +26,5 @@ struct Drive: Codable, Identifiable {
 extension Drive: FetchableRecord, PersistableRecord {
     enum Columns: String, ColumnExpression {
         case id, gameID, driveNumber, plays, yards, isHomeOffense, driveResult
-    }
-}
-
-extension Drive {
-    var driveHeaderTitle: String {
-        groupedPlays.last?.playText ?? ""
     }
 }

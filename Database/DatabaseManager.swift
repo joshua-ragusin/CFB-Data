@@ -54,7 +54,8 @@ struct DatabaseManager {
             Migration06AddDateNotesAndNeutralSiteToGameTable(),
             Migration07AddWinProbabilityPlayMetricsTable(),
             Migration08AddPlayTextAndScoreLines(),
-            Migration09AddDriveTable()
+            Migration09AddDriveTable(),
+            Migration10AddPlayTable()
         ]
     }
 }
