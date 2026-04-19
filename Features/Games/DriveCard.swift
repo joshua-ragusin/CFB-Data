@@ -120,7 +120,7 @@ struct DriveCard: View {
                 }
             }
             
-            Text(play.playText)
+            Text(play.playDescription)
                 .font(.subheadline)
                 .foregroundStyle(.primary)
                 .fixedSize(horizontal: false, vertical: true)

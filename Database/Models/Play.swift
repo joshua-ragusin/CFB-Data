@@ -17,7 +17,7 @@ struct Play: Codable, Identifiable {
     let down: Int
     let distance: Int
     let yardLine: Int
-    let playText: String
+    let playText: String?
     
     enum CodingKeys: String, CodingKey {
         case id, driveID, gameID, driveNumber, playNumber, offense, down, distance, yardLine, playText
@@ -27,5 +27,11 @@ struct Play: Codable, Identifiable {
 extension Play: FetchableRecord, PersistableRecord {
     enum Column: String, ColumnExpression {
         case id, driveID, gameID, driveNumber, playNumber, offense, down, distance, yardLine, playText
+    }
+}
+
+extension Play {
+    var playDescription: String {
+        playText ?? ""
     }
 }

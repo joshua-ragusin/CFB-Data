@@ -48,10 +48,29 @@ struct GameDetailsView: View {
     
     private var drivesView: some View {
         VStack(spacing: 0) {
+            HStack {
+                Text("Drives")
+                    .font(.headline)
+                    .foregroundStyle(.primary)
+                Spacer()
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            
+            Divider()
+            
             ForEach(viewModel.drives, id: \.id) { drive in
                 driveView(for: drive)
             }
         }
+        .background(.background)
+        .clipShape(RoundedRectangle(cornerRadius: 12))
+        .overlay(
+            RoundedRectangle(cornerRadius: 12)
+                .stroke(.separator, lineWidth: 1)
+        )
+        .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
+        .padding(.horizontal)
     }
     
     private func driveView(for drive: Drive) -> some View {
@@ -81,10 +100,8 @@ struct GameDetailsView: View {
                         .font(.headline)
                         .foregroundStyle(.primary)
                     Spacer()
-                    Image(systemName: "chevron.down")
+                    Image(symbol: isChartExpanded ? .chevronUp : .chevronDown)
                         .foregroundStyle(.secondary)
-                        .rotationEffect(.degrees(isChartExpanded ? 0 : -90))
-                        .animation(.easeInOut(duration: 0.2), value: isChartExpanded)
                 }
                 .padding(.horizontal, 16)
                 .padding(.vertical, 14)
@@ -93,68 +110,71 @@ struct GameDetailsView: View {
             if isChartExpanded {
                 Divider()
                 
-                Chart {
-                    // Shaded area under the line
-                    ForEach(viewModel.winProbabilityPlays) { play in
-                        AreaMark(
-                            x: .value("Play", play.playNumber),
-                            yStart: .value("Probability", 0),
-                            yEnd: .value("Probability", play.divergingProbability)
-                        )
-                        .foregroundStyle(
-                            play.divergingProbability >= 0
-                            ? Color.blue.opacity(0.2)
-                            : Color.red.opacity(0.2)
-                        )
-                        .interpolationMethod(.catmullRom)
-                    }
-                    
-                    // Line on top of area
-                    ForEach(viewModel.winProbabilityPlays) { play in
-                        LineMark(
-                            x: .value("Play", play.playNumber),
-                            y: .value("Probability", play.divergingProbability)
-                        )
-                        .foregroundStyle(
-                            play.divergingProbability >= 0
-                            ? Color.blue
-                            : Color.red
-                        )
-                        .interpolationMethod(.catmullRom)
-                    }
-                    
-                    // Center baseline
-                    RuleMark(y: .value("Even", 0))
-                        .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+                if viewModel.winProbabilityPlays.isEmpty {
+                    Text("Win probability data is not available for this game.")
+                        .font(.caption)
                         .foregroundStyle(.secondary)
-                }
-                .chartYScale(domain: -50...50)
-                .chartYAxis {
-                    AxisMarks(values: [-50, -25, 0, 25, 50]) { value in
-                        AxisGridLine()
-                        AxisValueLabel {
-                            if let v = value.as(Double.self) {
-                                let label = v == 0 ? "50/50" : "\(abs(Int(v + 50)))%"
-                                Text(label)
+                        .multilineTextAlignment(.center)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                } else {
+                    Chart {
+                        // Shaded area under the line
+                        ForEach(viewModel.winProbabilityPlays) { play in
+                            AreaMark(
+                                x: .value("Play", play.playNumber),
+                                yStart: .value("Probability", 0),
+                                yEnd: .value("Probability", play.divergingProbability)
+                            )
+                            .foregroundStyle(
+                                play.divergingProbability >= 0
+                                ? Color.blue.opacity(0.2)
+                                : Color.red.opacity(0.2)
+                            )
+                            .interpolationMethod(.catmullRom)
+                        }
+                        
+                        // Line on top of area
+                        ForEach(viewModel.winProbabilityPlays) { play in
+                            LineMark(
+                                x: .value("Play", play.playNumber),
+                                y: .value("Probability", play.divergingProbability)
+                            )
+                            .foregroundStyle(
+                                play.divergingProbability >= 0
+                                ? Color.blue
+                                : Color.red
+                            )
+                            .interpolationMethod(.catmullRom)
+                        }
+                        
+                        // Center baseline
+                        RuleMark(y: .value("Even", 0))
+                            .lineStyle(StrokeStyle(lineWidth: 1, dash: [4]))
+                            .foregroundStyle(.secondary)
+                    }
+                    .chartYScale(domain: -50...50)
+                    .chartYAxis {
+                        AxisMarks(values: [-50, -25, 0, 25, 50]) { value in
+                            AxisGridLine()
+                            AxisValueLabel {
+                                if let v = value.as(Double.self) {
+                                    let label = v == 0 ? "50/50" : "\(abs(Int(v + 50)))%"
+                                    Text(label)
+                                }
                             }
                         }
                     }
+                    .chartXAxis(.hidden)
+                    .overlay(alignment: .topLeading) {
+                        teamLabel(name: homeTeam, color: .blue)
+                    }
+                    .overlay(alignment: .topTrailing) {
+                        teamLabel(name: awayTeam, color: .red)
+                    }
+                    .frame(height: 220)
+                    .padding()
                 }
-                .chartXAxis(.hidden)
-                .overlay(alignment: .topLeading) {
-                    Text(homeTeam)
-                        .foregroundStyle(.blue)
-                        .font(.caption)
-                        .padding(8)
-                }
-                .overlay(alignment: .topTrailing) {
-                    Text(awayTeam)
-                        .foregroundStyle(.red)
-                        .font(.caption)
-                        .padding(8)
-                }
-                .frame(height: 220)
-                .padding()
             }
         }
         .background(.background)
@@ -165,5 +185,17 @@ struct GameDetailsView: View {
         )
         .shadow(color: .black.opacity(0.05), radius: 6, x: 0, y: 2)
         .padding(.horizontal)
+    }
+    
+    private func teamLabel(name: String, color: Color) -> some View {
+        HStack(spacing: 4) {
+            Circle()
+                .fill(color)
+                .frame(width: 8, height: 8)
+            Text(name)
+                .foregroundStyle(color)
+                .font(.caption)
+        }
+        .padding(8)
     }
 }

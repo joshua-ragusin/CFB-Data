@@ -15,7 +15,7 @@ struct PlayAPIGET: Codable {
     let down: Int
     let distance: Int
     let yardLine: Int
-    let playText: String
+    let playText: String?
     
     enum CodingKeys: String, CodingKey {
         case id, driveNumber, playNumber, offense, down, distance, playText

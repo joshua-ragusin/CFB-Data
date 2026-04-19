@@ -13,6 +13,19 @@ struct GameScoreboard: View {
     
     private let scoreColumnWidth: CGFloat = 38
     
+    // Use at least 4 columns; expand for overtime
+    private var quarterCount: Int {
+        max(4, max(game.homeLineScores.count, game.awayLineScores.count))
+    }
+    
+    private func periodLabel(for index: Int) -> String {
+        switch index {
+        case 0...3: return "Q\(index + 1)"
+        case 4: return "OT"
+        default: return "\(index - 3)OT"
+        }
+    }
+    
     var body: some View {
         VStack(spacing: 0) {
             headerRow
@@ -36,8 +49,8 @@ struct GameScoreboard: View {
             Text("Team")
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            ForEach(1...4, id: \.self) { quarter in
-                Text("Q\(quarter)")
+            ForEach(0..<quarterCount, id: \.self) { index in
+                Text(periodLabel(for: index))
                     .frame(width: scoreColumnWidth)
             }
             
@@ -58,8 +71,8 @@ struct GameScoreboard: View {
                 .minimumScaleFactor(0.75)
                 .font(.subheadline)
             
-            ForEach(Array(lineScores.prefix(4).enumerated()), id: \.offset) { _, score in
-                Text("\(score)")
+            ForEach(0..<quarterCount, id: \.self) { index in
+                Text(index < lineScores.count ? "\(lineScores[index])" : "-")
                     .frame(width: scoreColumnWidth)
                     .font(.subheadline)
             }
