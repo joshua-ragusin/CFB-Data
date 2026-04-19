@@ -28,11 +28,14 @@ struct MatchupMainView: View {
                             team: model.selectedTeam1,
                             binding: $model.selectedTeam1
                         )
+                        .accessibilityID(Identifier.team1Button)
+
                         teamSelectCard(
                             label: "Select Team 2",
                             team: model.selectedTeam2,
                             binding: $model.selectedTeam2
                         )
+                        .accessibilityID(Identifier.team2Button)
                     }
                     .padding(.horizontal)
                     
@@ -141,6 +144,7 @@ struct MatchupMainView: View {
                 if team != nil {
                     Button {
                         binding.wrappedValue = nil
+                        model.matchup = nil
                     } label: {
                         Image(symbol: .xMarkCircleFill)
                             .font(.title3)
@@ -148,6 +152,7 @@ struct MatchupMainView: View {
                             .padding(8)
                     }
                     .buttonStyle(.plain)
+                    .allowsHitTesting(true)
                 }
             }
         }

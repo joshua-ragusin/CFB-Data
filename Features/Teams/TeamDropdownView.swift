@@ -84,6 +84,7 @@ struct TeamDropdownView: View {
                 }
             }
         }
+        .accessibilityElement(children: .combine)
     }
 }
 
