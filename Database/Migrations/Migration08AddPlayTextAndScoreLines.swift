@@ -16,6 +16,8 @@ struct Migration08AddPlayTextAndScoreLines: Migration {
                 .defaults(to: "")
             table.add(column: "awayLineScores", .text)
                 .defaults(to: "")
+            table.add(column: "week", .integer)
+                .defaults(to: 0)
         }
         
         try db.alter(table: "WinProbabilityPlay") { table in

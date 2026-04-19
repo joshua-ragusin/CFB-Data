@@ -22,9 +22,10 @@ struct GameAPIGET: Codable {
     let notes: String?
     let homeLineScores: [Int]
     let awayLineScores: [Int]
+    let week: Int
     
     enum CodingKeys: String, CodingKey {
-        case id, season, seasonType, homeTeam, awayTeam, homePoints, awayPoints, neutralSite, notes, homeLineScores, awayLineScores
+        case id, season, seasonType, homeTeam, awayTeam, homePoints, awayPoints, neutralSite, notes, homeLineScores, awayLineScores, week
         case homeID = "homeId"
         case awayID = "awayId"
         case dateString = "startDate"
@@ -45,6 +46,7 @@ struct GameAPIGET: Codable {
         self.awayPoints = apiGame.awayPoints
         self.homeLineScores = apiGame.homeLineScores
         self.awayLineScores = apiGame.awayLineScores
+        self.week = apiGame.week
     }
 }
 
@@ -64,7 +66,8 @@ extension GameAPIGET {
             neutralSite: neutralSite,
             notes: notes,
             homeLineScores: homeLineScores,
-            awayLineScores: awayLineScores
+            awayLineScores: awayLineScores,
+            week: week
         )
     }
 }
