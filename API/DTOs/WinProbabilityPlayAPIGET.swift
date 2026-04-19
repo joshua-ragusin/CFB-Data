@@ -17,10 +17,11 @@ struct WinProbabilityPlayAPIGET: Codable {
     let yardLine: Int?
     let down: Int?
     let distance: Int?
+    let playText: String
     
     enum CodingKeys: String, CodingKey {
         case gameID = "gameId"
-        case home, away, homeWinProbability, playNumber, yardLine, down, distance
+        case home, away, homeWinProbability, playNumber, yardLine, down, distance, playText
     }
     
     func toWinProbabilityPlay() -> WinProbabilityPlay {
@@ -33,7 +34,8 @@ struct WinProbabilityPlayAPIGET: Codable {
             playNumber: playNumber,
             yardLine: yardLine,
             down: down,
-            distance: distance
+            distance: distance,
+            playText: playText
         )
     }
 }

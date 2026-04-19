@@ -30,7 +30,7 @@ struct TeamScheduleView: View {
                 gameList
             }
         }
-        .navigationTitle("\(viewModel.teamName) \(viewModel.year)")
+        .navigationTitle("\(viewModel.teamName) \(String(viewModel.year))")
         .navigationBarTitleDisplayMode(.inline)
         .task {
             await viewModel.loadGames()
@@ -76,6 +76,9 @@ struct TeamScheduleView: View {
     
     private func opponentInfo(for game: Game) -> some View {
         HStack(spacing: 8) {
+            Image(symbol: .at)
+                .opacity(!game.neutralSite && game.awayID == viewModel.teamID ? 1 : 0)
+            
             opponentLogo(for: game)
             
             VStack(alignment: .leading, spacing: 2) {

@@ -17,6 +17,7 @@ enum SFSymbol: String {
     case checkmark = "checkmark"
     case plusCircle = "plus.circle"
     case xMarkCircleFill = "xmark.circle.fill"
+    case at = "at"
     
     var value: String {
         rawValue

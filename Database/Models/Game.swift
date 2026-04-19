@@ -21,9 +21,11 @@ struct Game: Codable {
     let dateString: String
     let neutralSite: Bool
     let notes: String?
+    let homeLineScores: [Int]
+    let awayLineScores: [Int]
     
     enum CodingKeys: String, CodingKey {
-        case id, season, seasonType, homeID, homeTeam, awayID, awayTeam, homePoints, awayPoints, notes, neutralSite
+        case id, season, seasonType, homeID, homeTeam, awayID, awayTeam, homePoints, awayPoints, notes, neutralSite, homeLineScores, awayLineScores
         case dateString = "date"
     }
 }
@@ -32,7 +34,7 @@ struct Game: Codable {
 // MARK: - GRDB
 extension Game: FetchableRecord, PersistableRecord {
     enum Columns: String, ColumnExpression {
-        case id, season, seasonType, homeID, homeTeam, awayID, awayTeam, homePoints, awayPoints, notes, neutralSite
+        case id, season, seasonType, homeID, homeTeam, awayID, awayTeam, homePoints, awayPoints, notes, neutralSite, homeLineScores, awayLineScores
         case dateString = "date"
     }
 }

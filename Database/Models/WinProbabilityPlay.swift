@@ -18,15 +18,16 @@ struct WinProbabilityPlay: Codable {
     let yardLine: Int?
     let down: Int?
     let distance: Int?
+    let playText: String
     
     enum CodingKeys: String, CodingKey {
-        case id, gameID, home, away, homeWinProbability, playNumber, yardLine, down, distance
+        case id, gameID, home, away, homeWinProbability, playNumber, yardLine, down, distance, playText
     }
 }
 
 extension WinProbabilityPlay: FetchableRecord, PersistableRecord {
     enum Columns: String, ColumnExpression {
-        case id, gameID, home, away, homeWinProbability, playNumber, yardLine, down, distance
+        case id, gameID, home, away, homeWinProbability, playNumber, yardLine, down, distance, playText
     }
 }
 

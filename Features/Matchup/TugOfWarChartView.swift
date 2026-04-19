@@ -182,7 +182,7 @@ struct TugOfWarChartView: View {
                         Text(streak.beginningDate, format: .dateTime.year())
                         Text("–")
                             .foregroundStyle(.secondary)
-                        Text(streak.endDate, format: .dateTime.year())
+                        Text("Present")
                     }
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
