@@ -9,7 +9,7 @@ import XCTest
 
 extension XCUIElement {
     // MARK: - Waiting
-    func waitAndTap(timeout: TimeInterval) {
+    func waitAndTap(timeout: TimeInterval = UITestConstants.timeout.veryShort.rawValue) {
         XCTAssertTrue(waitForExistence(timeout: timeout))
         tap()
     }

@@ -79,8 +79,7 @@ struct TeamListPage: Page {
     func tapOnTeamCell(_ team: String) -> TeamDetailsPage {
         let teamList = app.collectionViews[Identifier.teamList.rawValue]
         let teamCell = teamList.cells.containing(.staticText, identifier: team).firstMatch
-        XCTAssertTrue(teamCell.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        teamCell.tap()
+        teamCell.waitAndTap()
         return TeamDetailsPage(app: app)
     }
     

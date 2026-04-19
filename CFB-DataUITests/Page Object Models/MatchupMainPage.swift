@@ -19,8 +19,7 @@ struct MatchupMainPage: Page {
         : "Matchups"
         
         let tabButton = app.tabBars.buttons[label]
-        XCTAssertTrue(tabButton.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        tabButton.tap()
+        tabButton.waitAndTap()
         
         return self
     }
@@ -44,9 +43,7 @@ struct MatchupMainPage: Page {
     func tapTeamSelectButton(for selectTeamButton: SelectTeamButton) -> TeamDropdownPage {
         let identifier: Identifier = selectTeamButton == .team1 ? Identifier.team1Button : Identifier.team2Button
         let button = app.buttons[identifier.rawValue]
-        
-        XCTAssertTrue(button.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        button.tap()
+        button.waitAndTap()
         
         return TeamDropdownPage(app: app)
     }
@@ -65,9 +62,8 @@ struct MatchupMainPage: Page {
         : Identifier.team2Button
         
         let clear = app.buttons[buttonIdentifier.rawValue].buttons[Identifier.cancelButton.rawValue]
-        XCTAssertTrue(clear.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        
-        clear.tap()
+        clear.waitAndTap()
+
         XCTAssertFalse(clear.exists)
         
         return self
@@ -93,8 +89,7 @@ struct MatchupMainPage: Page {
     @discardableResult
     func tapFullGamesLink() -> FullGamesPage {
         let fullGamesLink = app.buttons[TugOfWarViewIdentifier.fullGamesListLink.rawValue]
-        XCTAssertTrue(fullGamesLink.waitForExistence(timeout: UITestConstants.timeout.standard.rawValue))
-        fullGamesLink.tap()
+        fullGamesLink.waitAndTap(timeout: UITestConstants.timeout.standard.rawValue)
         
         return FullGamesPage(app: app)
     }
@@ -102,8 +97,7 @@ struct MatchupMainPage: Page {
     @discardableResult
     func tapHeadToHeadLink() -> HeadToHeadPage {
         let headToHeadLink = app.buttons[TugOfWarViewIdentifier.headToHeadResultsLink.rawValue]
-        XCTAssertTrue(headToHeadLink.waitForExistence(timeout: UITestConstants.timeout.standard.rawValue))
-        headToHeadLink.tap()
+        headToHeadLink.waitAndTap(timeout: UITestConstants.timeout.standard.rawValue)
         
         return HeadToHeadPage(app: app)
     }

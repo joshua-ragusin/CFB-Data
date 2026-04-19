@@ -23,16 +23,14 @@ struct TeamDropdownPage: Page {
     @discardableResult
     func tapTeamCellWhenEmpty(_ team: String) -> MatchupMainPage {
         let cell = app.staticTexts[team]
-        XCTAssertTrue(cell.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        cell.tap()
+        cell.waitAndTap()
         return MatchupMainPage(app: app)
     }
     
     @discardableResult
     func tapTeamCellWhenNotEmpty(_ team: String) -> Self {
         let cell = app.collectionViews.cells.matching(.staticText, identifier: team).firstMatch
-        XCTAssertTrue(cell.waitForExistence(timeout: UITestConstants.timeout.veryShort.rawValue))
-        cell.tap()
+        cell.waitAndTap()
         return self
     }
     
