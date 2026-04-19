@@ -44,6 +44,7 @@ final class NetworkClient: InjectionKey {
             decodedResponse = try JSONDecoder().decode(T.Response.self, from: data)
         } catch {
             let nsError = error as NSError
+            print("HTML RESPONSE: \(String(data: data, encoding: .utf8))")
             throw NetworkError.decodingError(message: nsError.debugDescription)
         }
         

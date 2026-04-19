@@ -53,7 +53,8 @@ struct DatabaseManager {
             Migration05AddGameTable(),
             Migration06AddDateNotesAndNeutralSiteToGameTable(),
             Migration07AddWinProbabilityPlayMetricsTable(),
-            Migration08AddPlayTextAndScoreLines()
+            Migration08AddPlayTextAndScoreLines(),
+            Migration09AddDriveTable()
         ]
     }
 }

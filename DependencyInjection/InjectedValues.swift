@@ -51,4 +51,9 @@ extension InjectedValues {
         get { Self[MetricsStore.self] }
         set { Self[MetricsStore.self] = newValue }
     }
+    
+    var driveStore: DriveStore {
+        get { Self[DriveStore.self] }
+        set { Self[DriveStore.self] = newValue }
+    }
 }

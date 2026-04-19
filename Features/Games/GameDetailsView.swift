@@ -14,6 +14,7 @@ struct GameDetailsView: View {
     @StateObject private var viewModel: GameDetailsViewModel
     
     @State private var isChartExpanded: Bool = true
+    @State private var expandedDriveID: String?
     
     private var homeTeam: String { viewModel.winProbabilityPlays.first?.home ?? "Home" }
     private var awayTeam: String { viewModel.winProbabilityPlays.first?.away ?? "Away" }
@@ -31,14 +32,40 @@ struct GameDetailsView: View {
                 } else {
                     GameScoreboard(game: viewModel.game)
                     chartView
+                    drivesView
                 }
             }
             .padding(.vertical)
         }
         .task {
             await viewModel.fetchWinProbabilityPlays()
+            await viewModel.fetchDrives()
         }
     }
+    
+    // MARK: - Drives Views
+    
+    private var drivesView: some View {
+        VStack(spacing: 0) {
+            ForEach(viewModel.drives, id: \.id) { drive in
+                driveView(for: drive)
+            }
+        }
+    }
+    
+    private func driveView(for drive: Drive) -> some View {
+        DriveCard(
+            drive: drive,
+            isExpanded: expandedDriveID == drive.id,
+            offenseTeamID: drive.isHomeOffense ? viewModel.homeID : viewModel.awayID
+        ) {
+            withAnimation(.snappy) {
+                expandedDriveID = expandedDriveID == drive.id ? nil : drive.id
+            }
+        }
+    }
+    
+    // MARK: - Chart View
     
     private var chartView: some View {
         VStack(spacing: 0) {

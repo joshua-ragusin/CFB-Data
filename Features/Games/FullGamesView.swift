@@ -44,7 +44,7 @@ struct FullGamesView: View {
     private func detailsNavigationLink(for game: Game) -> some View {
         NavigationLink {
             GameDetailsView(
-                viewModel: GameDetailsViewModel(game: game)
+                viewModel: GameDetailsViewModel(game: game, homeID: game.homeID, awayID: game.awayID)
             )
         } label: {
             Image(symbol: .chevronRight)
