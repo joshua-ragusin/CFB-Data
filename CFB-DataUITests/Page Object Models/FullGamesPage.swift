@@ -21,7 +21,7 @@ struct FullGamesPage: Page {
     
     @discardableResult
     func navigateBack() -> MatchupMainPage {
-        app.navigationBars.buttons.firstMatch.tap()
+        app.navigateBack()
         return MatchupMainPage(app: app)
     }
 }

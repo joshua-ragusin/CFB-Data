@@ -12,4 +12,5 @@ enum MatchupMainViewIdentifier: String, AccessibilityIdentifiable {
     case compareButton
     case tugOfWarView
     case matchupView
+    case cancelButton
 }

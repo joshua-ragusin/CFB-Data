@@ -152,7 +152,7 @@ struct MatchupMainView: View {
                             .padding(8)
                     }
                     .buttonStyle(.plain)
-                    .allowsHitTesting(true)
+                    .accessibilityID(Identifier.cancelButton)
                 }
             }
         }
