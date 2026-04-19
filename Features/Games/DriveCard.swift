@@ -21,22 +21,22 @@ struct DriveCard: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Driver header
+            // Drive header
             Button(action: onTap) {
                 HStack(spacing: 12) {
                     logoView
                     
                     VStack(alignment: .leading, spacing: 4) {
-                        Text(drive.driveResult)
+                        Text(drive.driveResult.capitalized)
                             .font(.headline)
-                            .foregroundStyle(.primary)
+                            .foregroundStyle(driveResultColor)
                         
                         HStack(spacing: 12) {
-                            Text(String(drive.yards))
+                            Text("\(drive.yards) yds")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                             
-                            Text("\(String(drive.plays)) plays")
+                            Text("\(drive.plays) plays")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
                         }
@@ -52,13 +52,26 @@ struct DriveCard: View {
             }
             .background(.gray.opacity(0.1))
             
-            // Play info
+            // Play list
             if isExpanded {
                 Divider()
                 
-                VStack(alignment: .leading, spacing: 0) {
-                    ForEach(drive.groupedPlays, id: \.id) { play in
-                        playCard(for: play)
+                if drive.groupedPlays.isEmpty {
+                    Text("No play data available")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                        .frame(maxWidth: .infinity, alignment: .center)
+                        .padding(.vertical, 16)
+                } else {
+                    VStack(alignment: .leading, spacing: 0) {
+                        ForEach(Array(drive.groupedPlays.enumerated()), id: \.element.id) { index, play in
+                            playCard(for: play)
+                            
+                            if index < drive.groupedPlays.count - 1 {
+                                Divider()
+                                    .padding(.horizontal, 16)
+                            }
+                        }
                     }
                 }
             }
@@ -68,7 +81,7 @@ struct DriveCard: View {
     private var logoView: some View {
         ZStack {
             RoundedRectangle(cornerRadius: 8)
-//                .fill(team.color.opacity(0.15))
+                .fill(.gray.opacity(0.1))
                 .frame(width: 60, height: 60)
             
             if let data = teamLogoData,
@@ -89,25 +102,55 @@ struct DriveCard: View {
     
     private func playCard(for play: Play) -> some View {
         VStack(alignment: .leading, spacing: 6) {
-            HStack(spacing: 8) {
-                VStack(alignment: .leading, spacing: 2) {
-                    Text("\(play.down ?? 0) & \(play.distance ?? 0)")
-                        .font(.caption.weight(.semibold))
-                        .foregroundStyle(.primary)
-                    
-                    Text("Yard line: \(play.yardLine ?? 0)")
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
+            HStack(spacing: 12) {
+                Text("\(ordinal(play.down)) & \(play.distance)")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.primary)
+                
+                Text("Yd. \(play.yardLine)")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
                 
                 Spacer()
+                
+                if let playNumber = play.playNumber {
+                    Text("Play \(playNumber)")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
+                }
             }
             
             Text(play.playText)
-                .font(.body)
-                .lineLimit(2)
+                .font(.subheadline)
                 .foregroundStyle(.primary)
+                .fixedSize(horizontal: false, vertical: true)
         }
-        .padding(.vertical, 8)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+    }
+    
+    private var driveResultColor: Color {
+        switch drive.driveResult.uppercased() {
+        case "TOUCHDOWN":
+            return .green
+        case "FIELD GOAL":
+            return .blue
+        case "FUMBLE", "INTERCEPTION", "TURNOVER":
+            return .red
+        case "TURNOVER ON DOWNS", "MISSED FG":
+            return .orange
+        default:
+            return .primary
+        }
+    }
+    
+    private func ordinal(_ n: Int) -> String {
+        switch n {
+        case 1: return "1st"
+        case 2: return "2nd"
+        case 3: return "3rd"
+        case 4: return "4th"
+        default: return "\(n)th"
+        }
     }
 }

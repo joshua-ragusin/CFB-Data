@@ -14,6 +14,7 @@ struct Migration10AddPlayTable: Migration {
         try db.create(table: "Play") { table in
             table.column("id", .text)
                 .notNull()
+                .primaryKey()
             table.column("driveID", .text)
                 .references("Drive")
             table.column("gameID", .integer)

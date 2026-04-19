@@ -20,11 +20,11 @@ extension PlayRequest: APIRequest {
     func handleResponse(_ response: [PlayAPIGET]) throws {
         switch self {
         case .plays(_, _, _):
-            try handleTeamsResponse(response)
+            try handlePlaysResponse(response)
         }
     }
     
-    private func handleTeamsResponse(_ response: [PlayAPIGET]) throws {
+    private func handlePlaysResponse(_ response: [PlayAPIGET]) throws {
         @Injected(\.playStore) var playStore
         
         for apiPlay in response {
