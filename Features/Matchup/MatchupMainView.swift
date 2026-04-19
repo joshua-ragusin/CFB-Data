@@ -16,6 +16,8 @@ struct MatchupMainView: View {
     @State private var fetchMatchup = false
     @State private var tugOWarID = UUID()
     
+    typealias Identifier = MatchupMainViewIdentifier
+    
     var body: some View {
         NavigationStack {
             ScrollView {
@@ -34,34 +36,7 @@ struct MatchupMainView: View {
                     }
                     .padding(.horizontal)
                     
-                    Button {
-                        fetchMatchup = true
-                        Task {
-                            await model.fetchMatchup()
-                            fetchMatchup = false
-                        }
-                        tugOWarID = UUID()
-                    } label: {
-                        Group {
-                            if fetchMatchup {
-                                ProgressView()
-                                    .progressViewStyle(.circular)
-                                    .tint(.white)
-                            } else {
-                                Text("Compare")
-                            }
-                        }
-                        .frame(maxWidth: .infinity)
-                        .frame(height: 44)
-                    }
-                    .buttonStyle(.borderedProminent)
-                    .disabled(
-                        fetchMatchup ||
-                        model.selectedTeam1 == nil ||
-                        model.selectedTeam2 == nil ||
-                        model.selectedTeam1 == model.selectedTeam2
-                    )
-                    .padding(.horizontal)
+                    compareButton
                     
                     // Matchup results
                     if let matchup = model.matchup {
@@ -82,7 +57,41 @@ struct MatchupMainView: View {
             }
             .navigationTitle("Matchups")
             .navigationBarTitleDisplayMode(.large)
+            .accessibilityID(Identifier.matchupView)
         }
+    }
+    
+    // MARK: - Compare Button
+    private var compareButton: some View {
+        Button {
+            fetchMatchup = true
+            Task {
+                await model.fetchMatchup()
+                fetchMatchup = false
+            }
+            tugOWarID = UUID()
+        } label: {
+            Group {
+                if fetchMatchup {
+                    ProgressView()
+                        .progressViewStyle(.circular)
+                        .tint(.white)
+                } else {
+                    Text("Compare")
+                }
+            }
+            .frame(maxWidth: .infinity)
+            .frame(height: 44)
+        }
+        .buttonStyle(.borderedProminent)
+        .disabled(
+            fetchMatchup ||
+            model.selectedTeam1 == nil ||
+            model.selectedTeam2 == nil ||
+            model.selectedTeam1 == model.selectedTeam2
+        )
+        .padding(.horizontal)
+        .accessibilityID(Identifier.compareButton)
     }
     
     // MARK: - Team Select Card
@@ -105,7 +114,7 @@ struct MatchupMainView: View {
                             .aspectRatio(contentMode: .fit)
                             .frame(width: 52, height: 52)
                     } else {
-                        Image(systemName: "plus.circle")
+                        Image(symbol: .plusCircle)
                             .font(.title2)
                             .foregroundStyle(team == nil ? Color.secondary : Color.red)
                     }
@@ -128,6 +137,19 @@ struct MatchupMainView: View {
             .padding()
             .background((team?.color ?? Color.secondary).opacity(0.1))
             .clipShape(RoundedRectangle(cornerRadius: 16))
+            .overlay(alignment: .topTrailing) {
+                if team != nil {
+                    Button {
+                        binding.wrappedValue = nil
+                    } label: {
+                        Image(symbol: .xMarkCircleFill)
+                            .font(.title3)
+                            .foregroundStyle(.secondary)
+                            .padding(8)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
         }
         .buttonStyle(.plain)
     }

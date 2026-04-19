@@ -19,6 +19,8 @@ struct TeamDropdownView: View {
     
     @Injected(\.teamStore) private var teamStore
     
+    typealias Identifier = TeamDropdownViewIdentifier
+    
     var filteredOptions: [Team] {
         if searchText.isEmpty {
             options
@@ -36,6 +38,7 @@ struct TeamDropdownView: View {
             List(filteredOptions, id: \.id) {
                 listCell(for: $0)
             }
+            .accessibilityID(Identifier.teamList)
             .searchable(text: $searchText)
             .listStyle(.plain)
         }
