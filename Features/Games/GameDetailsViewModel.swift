@@ -20,7 +20,6 @@ class GameDetailsViewModel: ObservableObject {
     
     @Injected(\.metricsStore) private var metricsStore
     @Injected(\.driveStore) private var driveStore
-    @Injected(\.teamStore) private var teamStore
     @Injected(\.playStore) private var playStore
     @Injected(\.networkClient) private var networkClient
     
@@ -70,8 +69,16 @@ class GameDetailsViewModel: ObservableObject {
         }
         
         do {
-            print("API CALL: GET DRIVES FOR: YEAR: \(game.season) WEEK: \(game.week), TEAM: \(game.homeTeam)")
-            try await networkClient.send(DriveRequest.drives(year: game.season, week: game.week, team: game.homeTeam))
+            print("API CALL: GET DRIVES FOR GAME: \(game.id)")
+            async let homeDrives = networkClient.send(DriveRequest.drives(
+                year: game.season, week: game.week, seasonType: game.seasonType,
+                team: game.homeTeam, gameID: game.id
+            ))
+            async let awayDrives = networkClient.send(DriveRequest.drives(
+                year: game.season, week: game.week, seasonType: game.seasonType,
+                team: game.awayTeam, gameID: game.id
+            ))
+            _ = try await (homeDrives, awayDrives)
             
             await MainActor.run {
                 let dbDrives = (try? driveStore.getDrives(for: game.id)) ?? []
@@ -94,8 +101,16 @@ class GameDetailsViewModel: ObservableObject {
         }
         
         do {
-            print("API CALL: GET PLAYS FOR: YEAR: \(game.season) WEEK: \(game.week), TEAM: \(game.homeTeam)")
-            try await networkClient.send(PlayRequest.plays(year: game.season, week: game.week, team: game.homeTeam))
+            print("API CALL: GET PLAYS FOR GAME: \(game.id)")
+            async let homePlays = networkClient.send(PlayRequest.plays(
+                year: game.season, week: game.week, seasonType: game.seasonType,
+                team: game.homeTeam, gameID: game.id
+            ))
+            async let awayPlays = networkClient.send(PlayRequest.plays(
+                year: game.season, week: game.week, seasonType: game.seasonType,
+                team: game.awayTeam, gameID: game.id
+            ))
+            _ = try await (homePlays, awayPlays)
         } catch {
             print(error)
         }

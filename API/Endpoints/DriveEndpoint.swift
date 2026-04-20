@@ -6,23 +6,24 @@
 //
 
 enum DriveEndpoint {
-    case drives(year: Int, week: Int, team: String)
+    case drives(year: Int, week: Int, seasonType: String, team: String)
 }
 
 extension DriveEndpoint: Endpoint {
     var path: String {
         switch self {
-        case .drives(_, _, _):
+        case .drives:
             "/drives"
         }
     }
     
     var parameters: [String: String]? {
         switch self {
-        case .drives(let year, let week, let team):
+        case .drives(let year, let week, let seasonType, let team):
             [
                 "year": String(year),
                 "week": String(week),
+                "seasonType": seasonType,
                 "team": team
             ]
         }

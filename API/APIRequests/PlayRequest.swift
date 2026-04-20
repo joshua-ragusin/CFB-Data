@@ -6,33 +6,32 @@
 //
 
 enum PlayRequest {
-    case plays(year: Int, week: Int, team: String)
+    case plays(year: Int, week: Int, seasonType: String, team: String, gameID: Int)
 }
 
 extension PlayRequest: APIRequest {
     var endpoint: PlayEndpoint {
         switch self {
-        case .plays(let year, let week, let team):
-                .plays(year: year, week: week, team: team)
+        case .plays(let year, let week, let seasonType, let team, _):
+            .plays(year: year, week: week, seasonType: seasonType, team: team)
         }
     }
     
     func handleResponse(_ response: [PlayAPIGET]) throws {
         switch self {
-        case .plays(_, _, _):
-            try handlePlaysResponse(response)
+        case .plays(_, _, _, _, let gameID):
+            try handlePlaysResponse(response, gameID: gameID)
         }
     }
     
-    private func handlePlaysResponse(_ response: [PlayAPIGET]) throws {
+    private func handlePlaysResponse(_ response: [PlayAPIGET], gameID: Int) throws {
         @Injected(\.playStore) var playStore
         
-        for apiPlay in response {
+        for apiPlay in response where apiPlay.gameID == gameID {
             if let _ = try? playStore.getPlay(by: apiPlay.id) {
                 continue
-            } else {
-                try? playStore.savePlay(apiPlay.toPlay())
             }
+            try? playStore.savePlay(apiPlay.toPlay())
         }
     }
 }

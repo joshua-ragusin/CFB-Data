@@ -41,6 +41,7 @@ class PlayStore: InjectionKey {
         try queue.read { db in
             try Play
                 .filter(Play.Column.driveID == driveID)
+                .order(Play.Column.playNumber)
                 .fetchAll(db)
         }
     }

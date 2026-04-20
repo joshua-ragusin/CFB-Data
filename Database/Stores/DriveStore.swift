@@ -26,6 +26,7 @@ class DriveStore: InjectionKey {
         try queue.read { db in
             try Drive
                 .filter(Drive.Columns.gameID == gameID)
+                .order(Drive.Columns.driveNumber)
                 .fetchAll(db)
         }
     }

@@ -6,23 +6,24 @@
 //
 
 enum PlayEndpoint {
-    case plays(year: Int, week: Int, team: String)
+    case plays(year: Int, week: Int, seasonType: String, team: String)
 }
 
 extension PlayEndpoint: Endpoint {
     var path: String {
         switch self {
-        case .plays(_, _, _):
+        case .plays:
             "/plays"
         }
     }
     
-    var parameters: [String : String]? {
+    var parameters: [String: String]? {
         switch self {
-        case .plays(let year, let week, let team):
+        case .plays(let year, let week, let seasonType, let team):
             [
                 "year": String(year),
                 "week": String(week),
+                "seasonType": seasonType,
                 "team": team
             ]
         }
