@@ -104,24 +104,31 @@ class TugOfWarChartViewModel: ObservableObject {
         return teamLogo
     }
     
-    func fetchFullGameInfoBetweenTeams() async {
+    func fetchFullGameInfoBetweenTeams() async throws {
         guard !games.isEmpty else { return }
-        
-        for game in games {
-            if let _ = try? gameStore.getGame(in: game.season, homeTeam: game.homeTeam, awayTeam: game.awayTeam) {
-                continue
-            } else {
-                do {
-                    print("API CALL: Game for \(game.homeTeam) - \(game.awayTeam) in \(game.season)")
-                    try await handleGameRequest(in: game.season, homeTeam: game.homeTeam, awayTeam: game.awayTeam)
-                } catch {
-                    print(error)
+
+        try await withThrowingTaskGroup(of: Void.self) { group in
+            for game in games {
+                let season = game.season
+                let homeTeam = game.homeTeam
+                let awayTeam = game.awayTeam
+                
+                group.addTask {
+                    if let _ = try? self.gameStore.getGame(in: season, homeTeam: homeTeam, awayTeam: awayTeam) {
+                        return
+                    } else {
+                        print("API CALL: Game for \(homeTeam) - \(awayTeam) in \(season)")
+                        try await self.handleGameRequest(in: season, homeTeam: homeTeam, awayTeam: awayTeam)
+                        return
+                    }
                 }
             }
-        }
-        
-        await MainActor.run {
-            fullGames = (try? gameStore.getAllGamesBetweenTeams(team1.school, team2.school)) ?? []
+            
+            for try await _ in group { }
+            
+            await MainActor.run {
+                fullGames = (try? self.gameStore.getAllGamesBetweenTeams(self.team1.school, self.team2.school)) ?? []
+            }
         }
     }
     

@@ -119,12 +119,14 @@ class GameDetailsViewModel: ObservableObject {
     }
     
     private func groupPlaysByDrive(drives: [Drive]) -> [Drive] {
-        var updatedDrives = drives
-        
-        for i in 0..<updatedDrives.count {
-            updatedDrives[i].groupedPlays = (try? playStore.getPlays(for: updatedDrives[i].id)) ?? []
+        let driveIDs = drives.map(\.id)
+        let allPlays = (try? playStore.getPlays(forDrives: driveIDs)) ?? []
+        let playsByDrive = Dictionary(grouping: allPlays, by: \.driveID)
+
+        return drives.map { drive in
+            var updated = drive
+            updated.groupedPlays = playsByDrive[drive.id] ?? []
+            return updated
         }
-        
-        return updatedDrives
     }
 }

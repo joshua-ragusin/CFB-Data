@@ -54,17 +54,26 @@ class TeamListViewModel: ObservableObject {
     }
     
     private func saveTeamLogos(_ teams: [Team]) async throws {
-        for team in teams {
-            guard let logoURL = team.logoURL else { continue }
-            
-            let (data, response) = try await URLSession.shared.data(from: logoURL)
-            
-            guard let httpResponse = response as? HTTPURLResponse,
-                  (200..<300).contains(httpResponse.statusCode) else {
-                continue
+        try await withThrowingTaskGroup(of: (Int, Data).self) { group in
+            for team in teams {
+                guard let logoURL = team.logoURL else { continue }
+                let teamID = team.id
+
+                group.addTask {
+                    let (data, response) = try await URLSession.shared.data(from: logoURL)
+                    
+                    guard let httpResponse = response as? HTTPURLResponse,
+                          (200..<300).contains(httpResponse.statusCode) else {
+                        throw NetworkError.invalidResponse
+                    }
+                    
+                    return (teamID, data)
+                }
             }
             
-            try teamStore.saveTeamLogo(TeamLogo(id: UUID(), teamID: team.id, logoData: data))
+            for try await (teamID, data) in group {
+                try teamStore.saveTeamLogo(TeamLogo(id: UUID(), teamID: teamID, logoData: data))
+            }
         }
     }
 }

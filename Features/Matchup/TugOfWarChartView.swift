@@ -42,7 +42,7 @@ struct TugOfWarChartView: View {
         }
         .padding()
         .task {
-            await model.fetchFullGameInfoBetweenTeams()
+            try? await model.fetchFullGameInfoBetweenTeams()
         }
     }
     

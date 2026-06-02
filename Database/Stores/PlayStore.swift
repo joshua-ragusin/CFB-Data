@@ -45,4 +45,14 @@ class PlayStore: InjectionKey {
                 .fetchAll(db)
         }
     }
+
+    func getPlays(forDrives driveIDs: [String]) throws -> [Play] {
+        guard !driveIDs.isEmpty else { return [] }
+        return try queue.read { db in
+            try Play
+                .filter(driveIDs.contains(Column("driveID")))
+                .order(Column("driveID"), Play.Column.playNumber)
+                .fetchAll(db)
+        }
+    }
 }

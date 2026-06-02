@@ -10,6 +10,8 @@ import Foundation
 final class NetworkClient: InjectionKey {
     static var currentValue = NetworkClient()
     
+    private let jsonDecoder = JSONDecoder()
+    
     func send<T: APIRequest>(_ request: T) async throws {
         guard let url = request.url else {
             throw NetworkError.invalidURL
@@ -41,7 +43,7 @@ final class NetworkClient: InjectionKey {
         let decodedResponse: T.Response
         
         do {
-            decodedResponse = try JSONDecoder().decode(T.Response.self, from: data)
+            decodedResponse = try jsonDecoder.decode(T.Response.self, from: data)
         } catch {
             let nsError = error as NSError
             throw NetworkError.decodingError(message: nsError.debugDescription)
